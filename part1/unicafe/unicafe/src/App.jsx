@@ -17,7 +17,15 @@ const calcPositive = (good, neutral, bad) => {
 }
 
 const Statistics = (props) => {
-  return (
+  if (props.good === 0 && props.neutral === 0 && props.bad === 0) {
+    return (
+      <div>
+        <h1>statistics</h1>
+        <p> No feedback given </p>
+      </div>
+    )
+  } else {
+      return (
     <div>
       <h1>statistics</h1>
       <p> good {props.good} </p>
@@ -28,6 +36,8 @@ const Statistics = (props) => {
       <p> positive {calcPositive(props.good, props.neutral, props.bad)} % </p>
     </div>
   )
+  }
+
 }
 
 function App() {
