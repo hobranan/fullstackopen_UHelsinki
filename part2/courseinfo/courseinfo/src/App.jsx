@@ -1,5 +1,6 @@
 const Header = ({ course }) => <h1>{course}</h1>;
 
+// * did reduce this way
 // reference: https://www.w3schools.com/jsref/jsref_reduce.asp
 const Total = ({ parts }) => {
   function getSum(total, num) {
