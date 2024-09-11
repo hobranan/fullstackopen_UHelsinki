@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import AxiosPersons from "./services/persons";
 
 const Filter = ({ newNameFilter, handleNoteChangeNameFilter }) => {
@@ -88,8 +87,20 @@ const App = () => {
     event.preventDefault(); // prevents refreshing the page
     // reference: https://www.geeksforgeeks.org/how-to-check-if-an-array-includes-an-object-in-javascript/
     if (persons.some((person) => person.name === newName)) {
-      alert(`name ${newName} is already added to phonebook`);
-      return;
+      if (window.confirm(`${newName} is already added to phonebook, replace old number with new?`)) {
+        const tempId = persons.find((person) => person.name === newName).id;
+        const noteObject = {
+          name: newName,
+          number: newNumber,
+          id: tempId,
+        };
+        AxiosPersons.update(noteObject.id, noteObject ).then(
+          () => {
+            console.log("update() promise fulfilled");
+          }
+        );
+        setPersons(persons.map((person) => (person.name !== newName ? person : noteObject)));
+      }
     } else if (persons.some((person) => person.number === newNumber)) {
       alert(`number ${newNumber} is already added to phonebook`);
       return;
