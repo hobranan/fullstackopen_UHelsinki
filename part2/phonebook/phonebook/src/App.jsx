@@ -1,5 +1,50 @@
 import { useState } from "react";
 
+const Filter = ({ newNameFilter, handleNoteChangeNameFilter }) => {
+  return (
+    <div>
+      filter shown with:{" "}
+      <input value={newNameFilter} onChange={handleNoteChangeNameFilter} />
+    </div>
+  );
+};
+
+const PersonForm = ({
+  newName,
+  handleNoteChange,
+  newNumber,
+  handleNoteChangeNumber,
+  addNote,
+}) => {
+  return (
+    <form onSubmit={addNote}>
+      <div>
+        name: <input value={newName} onChange={handleNoteChange} /> <br></br>
+        number: <input value={newNumber} onChange={handleNoteChangeNumber} />
+      </div>
+      <div>
+        <button type="submit">add</button>
+      </div>
+    </form>
+  );
+};
+
+const Persons = ({ persons, newNameFilter }) => {
+  return (
+    <ul>
+      {persons
+        .filter((each) =>
+          each.name.toLowerCase().includes(newNameFilter.toLowerCase())
+        )
+        .map((filteredPerson) => (
+          <li key={filteredPerson.name}>
+            {filteredPerson.name} at {filteredPerson.number}
+          </li>
+        ))}
+    </ul>
+  );
+};
+
 const App = () => {
   const [persons, setPersons] = useState([
     { name: "Arto Hellas", number: "040-123456", id: 1 },
@@ -49,33 +94,25 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-        filter shown with:{" "}
-        <input value={newNameFilter} onChange={handleNoteChangeNameFilter} />
-      </div>
-      <h2>add a new</h2>
-      <form onSubmit={addNote}>
-        <div>
-          name: <input value={newName} onChange={handleNoteChange} /> <br></br>
-          number: <input value={newNumber} onChange={handleNoteChangeNumber} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-      <h2>Numbers</h2>
-      {/*  method chaining of .filter onto .map*/}
-      <ul>
-        {persons
-          .filter((each) =>
-            each.name.toLowerCase().includes(newNameFilter.toLowerCase())
-          )
-          .map((filteredPerson) => (
-            <li key={filteredPerson.name}>
-              {filteredPerson.name} at {filteredPerson.number}
-            </li>
-          ))}
-      </ul>
+
+      <Filter
+        newNameFilter={newNameFilter}
+        handleNoteChangeNameFilter={handleNoteChangeNameFilter}
+      />
+
+      <h3>Add a new</h3>
+
+      <PersonForm
+        newName={newName}
+        handleNoteChange={handleNoteChange}
+        newNumber={newNumber}
+        handleNoteChangeNumber={handleNoteChangeNumber}
+        addNote={addNote}
+      />
+
+      <h3>Numbers</h3>
+
+      <Persons persons={persons} newNameFilter={newNameFilter} />
     </div>
   );
 };
