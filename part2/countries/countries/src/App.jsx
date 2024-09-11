@@ -10,12 +10,29 @@ const Filter = ({ newNameFilter, handleNoteChangeNameFilter }) => {
   );
 };
 
-const Persons = ({ personsFiltered }) => {
+const Persons = ({
+  personsFiltered,
+  setErrorMessage,
+  setPersonsFiltered,
+  setSinglePerson,
+}) => {
   return (
     <ul>
       {personsFiltered.map((filteredPerson) => (
         <div key={filteredPerson.name.common}>
           <li> {filteredPerson.name.common}</li>
+          <button
+            onClick={() => {
+              const tempName = filteredPerson;
+              setSinglePerson([tempName]); // needs to be in an array if single object (like the rest)
+              setErrorMessage(null);
+              setPersonsFiltered([]);
+              console.log("show: filter_persons[0]", tempName);
+              return;
+            }}
+          >
+            show
+          </button>
         </div>
       ))}
     </ul>
@@ -110,11 +127,10 @@ const App = () => {
       <h3>Countries</h3>
       <Notification message={errorMessage} />
       <Persons
-        persons={persons}
-        newNameFilter={newNameFilter}
-        setPersons={setPersons}
-        setErrorMessage={setErrorMessage}
         personsFiltered={personsFiltered}
+        setErrorMessage={setErrorMessage}
+        setPersonsFiltered={setPersonsFiltered}
+        setSinglePerson={setSinglePerson}
       />
       <SingleCountry country={singlePerson} />
     </div>
