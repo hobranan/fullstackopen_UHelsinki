@@ -31,7 +31,7 @@ const PersonForm = ({
 };
 
 // added another prop to remove a person from the list
-const Persons = ({ persons, newNameFilter, removePerson, setErrorMessage}) => {
+const Persons = ({ persons, newNameFilter, setPersons, setErrorMessage }) => {
   return (
     <ul>
       {persons
@@ -50,7 +50,11 @@ const Persons = ({ persons, newNameFilter, removePerson, setErrorMessage}) => {
                   AxiosPersons.deleteEntry(filteredPerson.id)
                     .then((response) => {
                       console.log("delete() promise fulfilled");
-                      removePerson(filteredPerson.id);
+                      setPersons(
+                        persons.filter(
+                          (person) => person.id !== filteredPerson.id
+                        )
+                      );
                     })
                     .catch((error) => {
                       if (error.response && error.response.status === 404) {
@@ -170,12 +174,7 @@ const App = () => {
     });
   }, []);
 
-  console.log("render", persons.length, "persons");
-
-  // had to make a separate function to remove/filter a person from the list
-  const removePerson = (id) => {
-    setPersons(persons.filter((person) => person.id !== id));
-  };
+  console.log("render", persons.length, "persons"); // useful for tracking how many times this component renders and current number of persons
 
   return (
     <div>
@@ -201,7 +200,7 @@ const App = () => {
       <Persons
         persons={persons}
         newNameFilter={newNameFilter}
-        removePerson={removePerson}
+        setPersons={setPersons}
         setErrorMessage={setErrorMessage}
       />
     </div>
