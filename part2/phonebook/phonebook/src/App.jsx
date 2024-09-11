@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import AxiosPersons from "./services/persons";
 
 const Filter = ({ newNameFilter, handleNoteChangeNameFilter }) => {
   return (
@@ -87,17 +88,18 @@ const App = () => {
       setNewName("");
       setNewNumber("");
 
-      axios.post("http://localhost:3001/persons", noteObject).then((response) => {
-        console.log(response);
+      AxiosPersons.create(noteObject).then((response) => {
+        console.log("create() promise fulfilled");
       });
+
     }
   };
 
   useEffect(() => {
-    console.log("effect");
-    axios.get("http://localhost:3001/persons").then((response) => {
-      console.log("promise fulfilled");
-      setPersons(response.data);
+    console.log("effect"); // useful for tracking when exactly this effect fires
+    AxiosPersons.getAll().then((response) => {
+      console.log("getAll() promise fulfilled");
+      setPersons(response);
     });
   }, []);
 
