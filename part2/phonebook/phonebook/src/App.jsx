@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import AxiosPersons from "./services/persons";
 
-
 const Filter = ({ newNameFilter, handleNoteChangeNameFilter }) => {
   return (
     <div>
@@ -32,7 +31,7 @@ const PersonForm = ({
 };
 
 // added another prop to remove a person from the list
-const Persons = ({ persons, newNameFilter, removePerson }) => {
+const Persons = ({ persons, newNameFilter, removePerson, setErrorMessage}) => {
   return (
     <ul>
       {persons
@@ -47,12 +46,23 @@ const Persons = ({ persons, newNameFilter, removePerson }) => {
             <button
               onClick={() => {
                 if (window.confirm("Delete " + filteredPerson.name + "?")) {
-                  AxiosPersons.deleteEntry(filteredPerson.id).then(
-                    (response) => {
+                  const tempName = filteredPerson.name;
+                  AxiosPersons.deleteEntry(filteredPerson.id)
+                    .then((response) => {
                       console.log("delete() promise fulfilled");
                       removePerson(filteredPerson.id);
-                    }
-                  );
+                    })
+                    .catch((error) => {
+                      if (error.response && error.response.status === 404) {
+                        console.log("delete() promise rejected");
+                        setErrorMessage(
+                          `Information on ${filteredPerson.name}'s has already been removed from the server`
+                        );
+                        setTimeout(() => {
+                          setErrorMessage(null);
+                        }, 3000);
+                      }
+                    });
                 }
               }}
             >
@@ -66,22 +76,18 @@ const Persons = ({ persons, newNameFilter, removePerson }) => {
 
 const Notification = ({ message }) => {
   if (message === null) {
-    return null
+    return null;
   }
 
-  return (
-    <div className='error'>
-      {message}
-    </div>
-  )
-}
+  return <div className="error">{message}</div>;
+};
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [newNameFilter, setNewNameFilter] = useState("");
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null);
 
   // capture the input value as you type
   const handleNoteChange = (event) => {
@@ -101,28 +107,34 @@ const App = () => {
     event.preventDefault(); // prevents refreshing the page
     // reference: https://www.geeksforgeeks.org/how-to-check-if-an-array-includes-an-object-in-javascript/
     if (persons.some((person) => person.name === newName)) {
-      if (window.confirm(`${newName} is already added to phonebook, replace old number with new?`)) {
+      if (
+        window.confirm(
+          `${newName} is already added to phonebook, replace old number with new?`
+        )
+      ) {
         const tempId = persons.find((person) => person.name === newName).id;
         const noteObject = {
           name: newName,
           number: newNumber,
           id: tempId,
         };
-        AxiosPersons.update(noteObject.id, noteObject ).then(
-          () => {
-            console.log("update() promise fulfilled");
-          }
+        AxiosPersons.update(noteObject.id, noteObject).then((response) => {
+          console.log("update() promise fulfilled");
+        });
+        setPersons(
+          persons.map((person) =>
+            person.name !== newName ? person : noteObject
+          )
         );
-        setPersons(persons.map((person) => (person.name !== newName ? person : noteObject)));
         setNewName("");
         setNewNumber("");
 
         setErrorMessage(
           `Updated ${noteObject.name}'s number to ${noteObject.number}`
-        )
+        );
         setTimeout(() => {
-          setErrorMessage(null)
-        }, 3000)
+          setErrorMessage(null);
+        }, 3000);
       }
     } else if (persons.some((person) => person.number === newNumber)) {
       alert(`number ${newNumber} is already added to phonebook`);
@@ -139,16 +151,14 @@ const App = () => {
       setNewName("");
       setNewNumber("");
 
-      AxiosPersons.create(noteObject).then(() => {
+      AxiosPersons.create(noteObject).then((response) => {
         console.log("create() promise fulfilled");
       });
 
-      setErrorMessage(
-        `Added ${noteObject.name} to the phonebook`
-      )
+      setErrorMessage(`Added ${noteObject.name} to the phonebook`);
       setTimeout(() => {
-        setErrorMessage(null)
-      }, 3000)
+        setErrorMessage(null);
+      }, 3000);
     }
   };
 
@@ -192,6 +202,7 @@ const App = () => {
         persons={persons}
         newNameFilter={newNameFilter}
         removePerson={removePerson}
+        setErrorMessage={setErrorMessage}
       />
     </div>
   );

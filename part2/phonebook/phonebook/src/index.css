@@ -11,7 +11,7 @@ h3 {
 }
 
 .error {
-  color: green;
+  color: red;
   background: lightgrey;
   font-size: 20px;
   border-style: solid;
