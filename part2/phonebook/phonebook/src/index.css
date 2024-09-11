@@ -1,4 +1,26 @@
-:root {
+h2 {
+  color: blueviolet;
+
+  font-style: italic;
+}
+
+h3 {
+  color: blue;
+
+  font-style: bold;
+}
+
+.error {
+  color: green;
+  background: lightgrey;
+  font-size: 20px;
+  border-style: solid;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+/* :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -65,4 +87,4 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
-}
+} */

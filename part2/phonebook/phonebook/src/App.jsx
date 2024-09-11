@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import AxiosPersons from "./services/persons";
 
+
 const Filter = ({ newNameFilter, handleNoteChangeNameFilter }) => {
   return (
     <div>
@@ -63,11 +64,24 @@ const Persons = ({ persons, newNameFilter, removePerson }) => {
   );
 };
 
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className='error'>
+      {message}
+    </div>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [newNameFilter, setNewNameFilter] = useState("");
+  const [errorMessage, setErrorMessage] = useState(null)
 
   // capture the input value as you type
   const handleNoteChange = (event) => {
@@ -100,6 +114,15 @@ const App = () => {
           }
         );
         setPersons(persons.map((person) => (person.name !== newName ? person : noteObject)));
+        setNewName("");
+        setNewNumber("");
+
+        setErrorMessage(
+          `Updated ${noteObject.name}'s number to ${noteObject.number}`
+        )
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 3000)
       }
     } else if (persons.some((person) => person.number === newNumber)) {
       alert(`number ${newNumber} is already added to phonebook`);
@@ -116,9 +139,16 @@ const App = () => {
       setNewName("");
       setNewNumber("");
 
-      AxiosPersons.create(noteObject).then((response) => {
+      AxiosPersons.create(noteObject).then(() => {
         console.log("create() promise fulfilled");
       });
+
+      setErrorMessage(
+        `Added ${noteObject.name} to the phonebook`
+      )
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 3000)
     }
   };
 
@@ -140,7 +170,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-
+      <Notification message={errorMessage} />
       <Filter
         newNameFilter={newNameFilter}
         handleNoteChangeNameFilter={handleNoteChangeNameFilter}
