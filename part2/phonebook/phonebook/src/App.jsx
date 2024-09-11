@@ -4,6 +4,7 @@ const App = () => {
   const [persons, setPersons] = useState([{ name: "Arto Hellas" }]);
   const [newName, setNewName] = useState("");
 
+  // capture the input value as you type
   const handleNoteChange = (event) => {
     console.log(event.target.value);
     setNewName(event.target.value);
@@ -11,11 +12,17 @@ const App = () => {
 
   const addNote = (event) => {
     event.preventDefault(); // prevents refreshing the page
-    const noteObject = {
-      name: newName,
-    };
-    setPersons(persons.concat(noteObject));
-    setNewName("");
+    // reference: https://www.geeksforgeeks.org/how-to-check-if-an-array-includes-an-object-in-javascript/
+    if (persons.some(person => person.name === newName)) {
+      alert(`${newName} is already added to phonebook`);
+      return;
+    } else {
+      const noteObject = {
+        name: newName,
+      };
+      setPersons(persons.concat(noteObject));
+      setNewName("");
+    }
   };
 
   return (
