@@ -79,10 +79,17 @@ const App = () => {
       const noteObject = {
         name: newName,
         number: newNumber,
+        id: (persons.length + 1).toString(),
       };
-      setPersons(persons.concat(noteObject));
+      console.log("noteObject", noteObject);
+      setPersons(persons.push(noteObject));
+      console.log("persons new", persons);
       setNewName("");
       setNewNumber("");
+
+      axios.post("http://localhost:3001/persons", noteObject).then((response) => {
+        console.log(response);
+      });
     }
   };
 
