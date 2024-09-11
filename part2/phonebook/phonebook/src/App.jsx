@@ -31,7 +31,8 @@ const PersonForm = ({
   );
 };
 
-const Persons = ({ persons, newNameFilter }) => {
+// added another prop to remove a person from the list
+const Persons = ({ persons, newNameFilter, removePerson }) => {
   return (
     <ul>
       {persons
@@ -39,9 +40,25 @@ const Persons = ({ persons, newNameFilter }) => {
           each.name.toLowerCase().includes(newNameFilter.toLowerCase())
         )
         .map((filteredPerson) => (
-          <li key={filteredPerson.name}>
-            {filteredPerson.name} at {filteredPerson.number}
-          </li>
+          <div key={filteredPerson.id}>
+            <li>
+              {filteredPerson.name} at {filteredPerson.number}
+            </li>
+            <button
+              onClick={() => {
+                if (window.confirm("Delete " + filteredPerson.name + "?")) {
+                  AxiosPersons.deleteEntry(filteredPerson.id).then(
+                    (response) => {
+                      console.log("delete() promise fulfilled");
+                      removePerson(filteredPerson.id);
+                    }
+                  );
+                }
+              }}
+            >
+              delete
+            </button>
+          </div>
         ))}
     </ul>
   );
@@ -83,7 +100,7 @@ const App = () => {
         id: (persons.length + 1).toString(),
       };
       console.log("noteObject", noteObject);
-      setPersons(persons.push(noteObject));
+      setPersons(persons.concat(noteObject)); // was told to use concat instead of push, as this doesnt not change existing arrays directly
       console.log("persons new", persons);
       setNewName("");
       setNewNumber("");
@@ -91,7 +108,6 @@ const App = () => {
       AxiosPersons.create(noteObject).then((response) => {
         console.log("create() promise fulfilled");
       });
-
     }
   };
 
@@ -104,6 +120,11 @@ const App = () => {
   }, []);
 
   console.log("render", persons.length, "persons");
+
+  // had to make a separate function to remove/filter a person from the list
+  const removePerson = (id) => {
+    setPersons(persons.filter((person) => person.id !== id));
+  };
 
   return (
     <div>
@@ -126,7 +147,11 @@ const App = () => {
 
       <h3>Numbers</h3>
 
-      <Persons persons={persons} newNameFilter={newNameFilter} />
+      <Persons
+        persons={persons}
+        newNameFilter={newNameFilter}
+        removePerson={removePerson}
+      />
     </div>
   );
 };
