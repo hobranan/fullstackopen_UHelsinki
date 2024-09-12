@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import AxiosPersons from "./services/persons";
 
+import axios from "axios";
+
 const Filter = ({ newNameFilter, handleNoteChangeNameFilter }) => {
   return (
     <div>
@@ -40,10 +42,46 @@ const Persons = ({
 };
 
 const SingleCountry = ({ country }) => {
-  // country will no be able to grab properties from the object if it doesnt exist yet
+  const [weather, setWeather] = useState(null);
+
+  useEffect(() => {
+    if (country.length !== 0) {
+      const apikey_openweathermap = import.meta.env.VITE_APIKEY_OPENWEATHERMAP;
+      axios
+        .get(
+          `https://api.openweathermap.org/data/2.5/weather?lat=${country[0].latlng[0]}&lon=${country[0].latlng[1]}&appid=${apikey_openweathermap}`
+        )
+        .then((response) => {
+          setWeather(response.data);
+        });
+    }
+  }, [country]);
+
+  // country will not be able to grab properties from the object if it doesnt exist yet
   if (country.length === 0) {
     return null;
   }
+
+  const weatherIcons = {
+    "clear sky": "01",
+    "few clouds": "02",
+    "scattered clouds": "03",
+    "broken clouds": "04",
+    "shower rain": "09",
+    rain: "10",
+    thunderstorm: "11",
+    snow: "13",
+    mist: "50",
+  };
+  const weatherData = weather?.weather[0];
+  let iconUrl = `https://openweathermap.org/img/wn/50d@2x.png`;
+  if (weatherData) {
+    console.log("weather", weather);
+    console.log("weatherData", weatherData);
+    const iconCode = weatherIcons[weatherData.description];
+    iconUrl = `https://openweathermap.org/img/wn/${iconCode}d@2x.png`;
+  }
+
   return (
     <div>
       <h1>{country[0].name.common}</h1>
@@ -56,6 +94,10 @@ const SingleCountry = ({ country }) => {
         ))}
       </ul>
       <img src={country[0].flags.png} alt="flag" width="100" />
+      <h4>Weather in {country[0].capital}</h4>
+      <p>temperature: {weather?.main.temp} celsius</p>
+      <img src={iconUrl} alt="weather icon" />
+      <p>wind: {weather?.wind.speed} m/s</p>
     </div>
   );
 };
