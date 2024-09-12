@@ -147,7 +147,7 @@ const App = () => {
       const noteObject = {
         name: newName,
         number: newNumber,
-        id: (persons.length + 1).toString(),
+        id: (persons.length + 1).toString(), // update later to use the backend generated id and consolidate frontend uses
       };
       console.log("noteObject", noteObject);
       setPersons(persons.concat(noteObject)); // was told to use concat instead of push, as this doesnt not change existing arrays directly
