@@ -144,10 +144,20 @@ const App = () => {
       alert(`number ${newNumber} is already added to phonebook`);
       return;
     } else {
+      const generateId = () => {
+        return Math.floor(Math.random() * 4294967295);
+      };
+      let random_id = generateId();
+      console.log(random_id);
+      while (persons.find((item) => item.id === random_id)) {
+        random_id = generateId();
+        console.log(random_id);
+      }
+      //* TO DO: change ID to number (non-string) type after making sure frontend id generation functionality works with backend for all API requests types
       const noteObject = {
         name: newName,
         number: newNumber,
-        id: (persons.length + 1).toString(), // update later to use the backend generated id and consolidate frontend uses
+        id: (random_id).toString(), 
       };
       console.log("noteObject", noteObject);
       setPersons(persons.concat(noteObject)); // was told to use concat instead of push, as this doesnt not change existing arrays directly
