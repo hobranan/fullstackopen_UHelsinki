@@ -122,23 +122,31 @@ const App = () => {
           number: newNumber,
           id: tempId,
         };
-        AxiosPersons.update(noteObject.id, noteObject).then((response) => {
-          setPersons(
-            persons.map((person) =>
-              person.name !== newName ? person : noteObject
-            )
-          );
-          setNewName("");
-          setNewNumber("");
+        AxiosPersons.update(noteObject.id, noteObject)
+          .then((response) => {
+            setPersons(
+              persons.map((person) =>
+                person.name !== newName ? person : noteObject
+              )
+            );
+            setNewName("");
+            setNewNumber("");
 
-          setErrorMessage(
-            `Updated ${noteObject.name}'s number to ${noteObject.number}`
-          );
-          setTimeout(() => {
-            setErrorMessage(null);
-          }, 3000);
-          console.log("update() promise fulfilled");
-        });
+            setErrorMessage(
+              `Updated ${noteObject.name}'s number to ${noteObject.number}`
+            );
+            setTimeout(() => {
+              setErrorMessage(null);
+            }, 3000);
+            console.log("update() promise fulfilled");
+          })
+          .catch((error) => {
+            console.log(error.response.data.error);
+            setErrorMessage(error.response.data.error);
+            setTimeout(() => {
+              setErrorMessage(null);
+            }, 3000);
+          });
       }
     } else if (persons.some((person) => person.number === newNumber)) {
       alert(`number ${newNumber} is already added to phonebook`);
