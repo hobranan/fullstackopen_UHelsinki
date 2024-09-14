@@ -123,22 +123,22 @@ const App = () => {
           id: tempId,
         };
         AxiosPersons.update(noteObject.id, noteObject).then((response) => {
+          setPersons(
+            persons.map((person) =>
+              person.name !== newName ? person : noteObject
+            )
+          );
+          setNewName("");
+          setNewNumber("");
+
+          setErrorMessage(
+            `Updated ${noteObject.name}'s number to ${noteObject.number}`
+          );
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 3000);
           console.log("update() promise fulfilled");
         });
-        setPersons(
-          persons.map((person) =>
-            person.name !== newName ? person : noteObject
-          )
-        );
-        setNewName("");
-        setNewNumber("");
-
-        setErrorMessage(
-          `Updated ${noteObject.name}'s number to ${noteObject.number}`
-        );
-        setTimeout(() => {
-          setErrorMessage(null);
-        }, 3000);
       }
     } else if (persons.some((person) => person.number === newNumber)) {
       alert(`number ${newNumber} is already added to phonebook`);
@@ -161,21 +161,27 @@ const App = () => {
       };
       console.log("noteObject", noteObject);
 
-      setNewName("");
-      setNewNumber("");
-
-      AxiosPersons.create(noteObject).then((response) => {
-        console.log("create() promise fulfilled");
-        noteObject.id = response.id;
-        console.log("noteObject.id = response.id=", noteObject.id);
-      });
-
-      setPersons(persons.concat(noteObject));
-      console.log("persons new", persons);
-      setErrorMessage(`Added ${noteObject.name} to the phonebook`);
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 3000);
+      AxiosPersons.create(noteObject)
+        .then((response) => {
+          console.log("create() promise fulfilled");
+          noteObject.id = response.id;
+          console.log("noteObject.id = response.id=", noteObject.id);
+          setPersons(persons.concat(noteObject));
+          console.log("persons new", persons);
+          setErrorMessage(`Added ${noteObject.name} to the phonebook`);
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 3000);
+          setNewName("");
+          setNewNumber("");
+        })
+        .catch((error) => {
+          console.log(error.response.data.error);
+          setErrorMessage(error.response.data.error);
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 3000);
+        });
     }
   };
 
