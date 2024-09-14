@@ -154,21 +154,24 @@ const App = () => {
         console.log(random_id);
       }
       //* TO DO: change ID to number (non-string) type after making sure frontend id generation functionality works with backend for all API requests types
-      const noteObject = {
+      let noteObject = {
         name: newName,
         number: newNumber,
-        id: (random_id).toString(), 
+        id: random_id.toString(), //* this is not used since mongoDB generates its own id, but may be useful for other databases like SQL
       };
       console.log("noteObject", noteObject);
-      setPersons(persons.concat(noteObject)); // was told to use concat instead of push, as this doesnt not change existing arrays directly
-      console.log("persons new", persons);
+
       setNewName("");
       setNewNumber("");
 
       AxiosPersons.create(noteObject).then((response) => {
         console.log("create() promise fulfilled");
+        noteObject.id = response.id;
+        console.log("noteObject.id = response.id=", noteObject.id);
       });
 
+      setPersons(persons.concat(noteObject));
+      console.log("persons new", persons);
       setErrorMessage(`Added ${noteObject.name} to the phonebook`);
       setTimeout(() => {
         setErrorMessage(null);
